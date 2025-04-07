@@ -53,6 +53,7 @@ export const ChatContextProvider = ({
       console.error("Chat not found");
       return;
     }
+    router.push(`?id=${response.chat.id}`);
     if (response.chat.id === selectedChat?.id) {
       setMessages(response.chat.messages || []);
       return;
@@ -68,18 +69,19 @@ export const ChatContextProvider = ({
       return;
     }
     setAllChats(response.chats || []);
+    setSelectedChat(response.chats[0]);
   }
 
   useEffect(() => {
     const chatId = searchParams.get("id") || undefined;
-    if (!chatId) {
+    if (!chatId && !selectedChat) {
       setSelectedChat(undefined);
       setMessages([]);
       return;
     }
 
-    fetchChat(chatId);
-  }, [pathname, searchParams]);
+    fetchChat(chatId || selectedChat?.id || "");
+  }, [pathname, searchParams, selectedChat]);
 
   async function sendMessage(message: string) {
     if (!selectedChat) {

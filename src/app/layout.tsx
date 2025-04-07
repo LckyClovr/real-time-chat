@@ -25,9 +25,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>
-        <ChatContextProvider>{children}</ChatContextProvider>
-      </body>
+      <body>{children}</body>
     </html>
   );
 }
