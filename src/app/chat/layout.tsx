@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { ChatContextProvider } from "../_components/ChatContext";
 
 export default function RootLayout({
@@ -5,5 +6,9 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return <ChatContextProvider>{children}</ChatContextProvider>;
+  return (
+    <Suspense>
+      <ChatContextProvider>{children}</ChatContextProvider>
+    </Suspense>
+  );
 }
