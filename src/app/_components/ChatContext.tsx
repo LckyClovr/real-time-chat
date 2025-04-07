@@ -8,17 +8,22 @@ import React, {
   useState,
 } from "react";
 import api from "@/ts/api";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+
+import { usePathname, useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
+
 import { Chat, Message } from "@/ts/api/api.types";
 
 const ChatContext = createContext<{
   selectedChat: Chat | undefined;
   messages: Message[];
   allChats: Chat[];
+  sendMessage: (message: string) => Promise<void>;
 }>({
   selectedChat: undefined,
   messages: [],
   allChats: [],
+  sendMessage: async () => {},
 });
 
 export const ChatContextProvider = ({
@@ -39,13 +44,17 @@ export const ChatContextProvider = ({
   }, []);
 
   async function fetchChat(chatId: string) {
-    const response = await api.chat.getChat(chatId as string);
+    const response = await api.chat.getChat(chatId);
     if (response.error) {
       console.error("Error fetching chat:", response.error);
       return;
     }
     if (!response.chat) {
       console.error("Chat not found");
+      return;
+    }
+    if (response.chat.id === selectedChat?.id) {
+      setMessages(response.chat.messages || []);
       return;
     }
     setSelectedChat(response.chat);
@@ -72,12 +81,30 @@ export const ChatContextProvider = ({
     fetchChat(chatId);
   }, [pathname, searchParams]);
 
+  async function sendMessage(message: string) {
+    if (!selectedChat) {
+      console.error("No chat selected");
+      return;
+    }
+    const response = await api.chat.sendMessage(selectedChat.id, message);
+    if (response.error) {
+      console.error("Error sending message:", response.error);
+      return;
+    }
+    if (!response.message) {
+      console.error("Message not found in response");
+      return;
+    }
+    fetchChat(selectedChat.id);
+  }
+
   return (
     <ChatContext.Provider
       value={{
         selectedChat,
         messages,
         allChats,
+        sendMessage,
       }}
     >
       {children}

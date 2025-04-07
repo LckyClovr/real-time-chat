@@ -42,11 +42,11 @@ export async function fetchAPI({
         : undefined,
       next: noCache ? undefined : { tags: [...(tags || []), "api"] },
     });
-
     if (noJson) return response;
 
     return await response.json();
   } catch (error) {
+    console.error("Error fetching API:", error);
     return undefined;
   }
 }

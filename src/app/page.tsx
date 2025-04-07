@@ -4,6 +4,8 @@ import React from "react";
 import { useState } from "react";
 import { useChatContext } from "./_components/ChatContext";
 import { useRouter } from "next/navigation";
+import GetTimeAgo from "@/ts/utils/GetTimeAgo";
+import { cn } from "@/ts/utils/cn";
 
 const mainBackgroundColor = "#262626";
 const friendsBackgroundColor = "#202020";
@@ -15,13 +17,12 @@ const textBoxColor = "#323232";
 
 export default function Page() {
   const router = useRouter();
-  const { selectedChat, messages, allChats } = useChatContext();
+  const { selectedChat, messages, allChats, sendMessage } = useChatContext();
 
   const [text, setText] = useState("");
   const keyDown = (event: React.KeyboardEvent) => {
     if (event.key === "Enter") {
-      console.log(text); // right now it just outputs whatever you type into the console
-      // make a function that takes the text in the textbox as input
+      sendMessage(text); // Call the sendMessage function with the current text
       setText(""); // remove the text in the chat box after hitting enter so we can type our next message
     }
   };
@@ -42,18 +43,19 @@ export default function Page() {
         {allChats.map((chat) => {
           return (
             <div
-              className="hover:cursor-pointer"
+              className={cn(`hover:cursor-pointer hover:bg-gray-600`, {
+                "bg-gray-700": selectedChat?.id !== chat.id,
+                "bg-gray-600": selectedChat?.id === chat.id,
+              })}
               key={chat.id}
               style={{
                 width: "6.94vw",
                 padding: "1.28vh",
                 paddingLeft: "4.16vw",
-                color: "#efefef",
                 position: "absolute",
                 top: "5vh",
                 left: "0px",
                 borderRadius: "1.28vh",
-                backgroundColor: textBoxColor,
                 outline: "none",
                 fontSize: "1.11vw",
               }}
@@ -103,22 +105,13 @@ export default function Page() {
         <div className="flex flex-col">
           {messages.map((message) => {
             return (
-              <div
-                key={message.id}
-                style={{
-                  width: "41.6vw",
-                  padding: "1.28vh",
-                  paddingLeft: "4.16vw",
-                  color: "#efefef",
-                  position: "absolute",
-                  top: "5vh",
-                  left: "34.72vw",
-                  borderRadius: "1.28vh",
-                  backgroundColor: textBoxColor,
-                  outline: "none",
-                  fontSize: "1.11vw",
-                }}
-              >
+              <div key={message.id} className="bg-gray-800 p-2 m-2 rounded-md">
+                <div className="flex items-center mb-1 gap-4">
+                  <div className="text-gray-300 font-semibold">
+                    {message.user.name}:
+                  </div>
+                  <div>{GetTimeAgo(message.createdAt)}</div>
+                </div>
                 {message.text}
               </div>
             );

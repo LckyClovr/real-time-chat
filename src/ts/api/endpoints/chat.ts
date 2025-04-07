@@ -1,10 +1,11 @@
-import { Chat, User } from "@/ts/api/api.types";
+import { Chat, Message, User } from "@/ts/api/api.types";
 import { fetchAPI } from "../util";
 
 const chat = {
   createChat: createChat,
   getChatList: getChatList,
   getChat: getChat,
+  sendMessage: sendMessage,
 };
 
 export default chat;
@@ -42,6 +43,19 @@ async function getChat(chatId: string) {
 
   return {
     chat: response?.chat || undefined,
+    error: response?.error || undefined,
+  };
+}
+
+async function sendMessage(chatId: string, message: string) {
+  const response = (await fetchAPI({
+    method: "POST",
+    uri: `/chat/${chatId}/send-message`,
+    body: { message: message },
+  })) as { message?: Message; error?: string };
+  console.log("response", response);
+  return {
+    message: response?.message || undefined,
     error: response?.error || undefined,
   };
 }
