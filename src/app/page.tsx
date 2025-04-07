@@ -2,6 +2,8 @@
 import Image from "next/image";
 import React from "react";
 import { useState } from "react";
+import { useChatContext } from "./_components/ChatContext";
+import { useRouter } from "next/navigation";
 
 const mainBackgroundColor = "#262626";
 const friendsBackgroundColor = "#202020";
@@ -9,8 +11,12 @@ const chatroomSelectionBackgroundColor = "#191919";
 const textBoxColor = "#323232";
 //there are some weird numbers in the positioning and sizing that are taken by positioning manually using
 //pixels then converting to a dynamic percentage of the viewport size so they scale with the window
-const Home: React.FC = () => {
-  //console.log(window.innerHeight)// 1440 by 778 for some reason?
+//console.log(window.innerHeight)// 1440 by 778 for some reason?
+
+export default function Page() {
+  const router = useRouter();
+  const { selectedChat, messages, allChats } = useChatContext();
+
   const [text, setText] = useState("");
   const keyDown = (event: React.KeyboardEvent) => {
     if (event.key === "Enter") {
@@ -32,7 +38,35 @@ const Home: React.FC = () => {
           height: "100vh", // Height of the rectangle
           backgroundColor: chatroomSelectionBackgroundColor, // Background color of the rectangle
         }}
-      />
+      >
+        {allChats.map((chat) => {
+          return (
+            <div
+              className="hover:cursor-pointer"
+              key={chat.id}
+              style={{
+                width: "6.94vw",
+                padding: "1.28vh",
+                paddingLeft: "4.16vw",
+                color: "#efefef",
+                position: "absolute",
+                top: "5vh",
+                left: "0px",
+                borderRadius: "1.28vh",
+                backgroundColor: textBoxColor,
+                outline: "none",
+                fontSize: "1.11vw",
+              }}
+              onClick={() => {
+                // make a function that takes the chat id as input and sets the selected chat to that chat
+                router.push(`?id=${chat.id}`); // this is the function that changes the url to the chat id
+              }}
+            >
+              {chat.name}
+            </div>
+          );
+        })}
+      </div>
       <div
         style={{
           // rectangle for background of friends list
@@ -65,7 +99,32 @@ const Home: React.FC = () => {
           top: "0px",
           left: "27.78vw",
         }}
-      />
+      >
+        <div className="flex flex-col">
+          {messages.map((message) => {
+            return (
+              <div
+                key={message.id}
+                style={{
+                  width: "41.6vw",
+                  padding: "1.28vh",
+                  paddingLeft: "4.16vw",
+                  color: "#efefef",
+                  position: "absolute",
+                  top: "5vh",
+                  left: "34.72vw",
+                  borderRadius: "1.28vh",
+                  backgroundColor: textBoxColor,
+                  outline: "none",
+                  fontSize: "1.11vw",
+                }}
+              >
+                {message.text}
+              </div>
+            );
+          })}
+        </div>
+      </div>
       <input
         type="text"
         id="chatTextBox"
@@ -89,6 +148,4 @@ const Home: React.FC = () => {
       />
     </div>
   );
-};
-
-export default Home;
+}
