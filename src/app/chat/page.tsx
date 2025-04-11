@@ -32,7 +32,11 @@ export default function Page() {
   };
 
   if (allChats.length === 0) {
-    return <div>Loading...</div>; // or some loading spinner
+    return (
+      <div className="text-3xl items-center text-center w-screen h-screen">
+        Loading...
+      </div>
+    ); // or some loading spinner
   }
 
   return (
