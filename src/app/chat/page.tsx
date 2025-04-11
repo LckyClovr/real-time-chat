@@ -31,7 +31,7 @@ export default function Page() {
     setText(event.target.value); // Update the state as the user types
   };
 
-  if (!allChats) {
+  if (allChats.length === 0) {
     return <div>Loading...</div>; // or some loading spinner
   }
 
