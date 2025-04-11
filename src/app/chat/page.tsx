@@ -30,6 +30,7 @@ export default function Page() {
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setText(event.target.value); // Update the state as the user types
   };
+
   return (
     <div>
       <div
@@ -102,7 +103,14 @@ export default function Page() {
           left: "27.78vw",
         }}
       >
-        <div className="flex flex-col">
+        <div
+          className="flex flex-col overflow-y-scroll h-[85%] w-full"
+          ref={(el) => {
+            if (el) {
+              el.scrollTop = el.scrollHeight; // Automatically scroll to the bottom
+            }
+          }}
+        >
           {messages.map((message) => {
             return (
               <div key={message.id} className="bg-gray-800 p-2 m-2 rounded-md">
