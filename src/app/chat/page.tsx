@@ -33,8 +33,8 @@ export default function Page() {
 
   if (allChats.length === 0) {
     return (
-      <div className="text-3xl items-center text-center w-screen h-screen">
-        Loading...
+      <div className="flex flex-row text-3xl items-center justify-center w-screen h-screen">
+        <p className="text-center">Loading, please wait...</p>
       </div>
     ); // or some loading spinner
   }
@@ -48,26 +48,19 @@ export default function Page() {
           height: "100vh", // Height of the rectangle
           backgroundColor: chatroomSelectionBackgroundColor, // Background color of the rectangle
         }}
+        className="py-5"
       >
         {allChats.map((chat) => {
           return (
             <div
-              className={cn(`hover:cursor-pointer hover:bg-gray-600`, {
-                "bg-gray-700": selectedChat?.id !== chat.id,
-                "bg-gray-600": selectedChat?.id === chat.id,
-              })}
+              className={cn(
+                `hover:cursor-pointer hover:bg-gray-600 w-full rounded-full text-center`,
+                {
+                  "bg-gray-700": selectedChat?.id !== chat.id,
+                  "bg-gray-600": selectedChat?.id === chat.id,
+                }
+              )}
               key={chat.id}
-              style={{
-                width: "6.94vw",
-                padding: "1.28vh",
-                paddingLeft: "4.16vw",
-                position: "absolute",
-                top: "5vh",
-                left: "0px",
-                borderRadius: "1.28vh",
-                outline: "none",
-                fontSize: "1.11vw",
-              }}
               onClick={() => {
                 // make a function that takes the chat id as input and sets the selected chat to that chat
                 router.push(`?id=${chat.id}`); // this is the function that changes the url to the chat id
