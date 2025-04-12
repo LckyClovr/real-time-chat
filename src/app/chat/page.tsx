@@ -1,7 +1,6 @@
 "use client";
 import Image from "next/image";
-import React from "react";
-import { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useChatContext } from "../_components/ChatContext";
 import { useRouter } from "next/navigation";
 import GetTimeAgo from "@/ts/utils/GetTimeAgo";
@@ -20,6 +19,12 @@ export default function Page() {
   const { selectedChat, messages, allChats, sendMessage } = useChatContext();
 
   const [text, setText] = useState("");
+
+  // refs for controlling scroll behavior
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const hasScrolledInitially = useRef(false); // only scroll to bottom on first load
+  const userScrolledUp = useRef(false); // track if user scrolled up manually
+
   const keyDown = (event: React.KeyboardEvent) => {
     if (event.key === "Enter") {
       sendMessage(text); // Call the sendMessage function with the current text
@@ -29,6 +34,35 @@ export default function Page() {
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setText(event.target.value); // Update the state as the user types
+  };
+
+  // Automatically scroll to the bottom once on initial load
+  useEffect(() => {
+    if (scrollContainerRef.current && !hasScrolledInitially.current) {
+      scrollContainerRef.current.scrollTop =
+        scrollContainerRef.current.scrollHeight;
+      hasScrolledInitially.current = true;
+    }
+  }, []);
+
+  // Auto-scroll when new messages arrive unless the user has scrolled up
+  useEffect(() => {
+    const container = scrollContainerRef.current;
+    if (container && !userScrolledUp.current) {
+      container.scrollTop = container.scrollHeight;
+    }
+  }, [messages]);
+
+  // Track if user has scrolled up manually
+  const handleScroll = () => {
+    const container = scrollContainerRef.current;
+    if (container) {
+      const distanceFromBottom =
+        container.scrollHeight - container.scrollTop - container.clientHeight;
+
+      // if the user scrolls more than 50px away from bottom, we stop auto-scrolling
+      userScrolledUp.current = distanceFromBottom > 50;
+    }
   };
 
   if (allChats.length === 0) {
@@ -124,11 +158,8 @@ export default function Page() {
       >
         <div
           className="flex flex-col overflow-y-scroll h-[85%] w-full"
-          ref={(el) => {
-            if (el) {
-              el.scrollTop = el.scrollHeight; // Automatically scroll to the bottom
-            }
-          }}
+          ref={scrollContainerRef}
+          onScroll={handleScroll}
         >
           {messages.map((message) => {
             return (
