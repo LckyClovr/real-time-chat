@@ -34,7 +34,25 @@ export default function Page() {
   if (allChats.length === 0) {
     return (
       <div className="flex flex-row text-3xl items-center justify-center w-screen h-screen">
-        <p className="text-center">Loading, please wait...</p>
+        <p className="text-center">
+          Loading, please wait
+          <span className="animate-[blink_1.5s_steps(5,start)_infinite]">
+            ...
+          </span>
+        </p>
+        <style jsx>{`
+          @keyframes blink {
+            0% {
+              opacity: 1;
+            }
+            50% {
+              opacity: 0;
+            }
+            100% {
+              opacity: 1;
+            }
+          }
+        `}</style>
       </div>
     ); // or some loading spinner
   }
@@ -132,7 +150,7 @@ export default function Page() {
         id="chatTextBox"
         value={text}
         onChange={handleChange}
-        placeholder="Message @User"
+        placeholder="Type your message and press enter..."
         onKeyDown={keyDown}
         style={{
           width: "41.6vw",
