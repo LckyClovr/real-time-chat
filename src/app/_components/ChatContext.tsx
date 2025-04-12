@@ -62,6 +62,16 @@ export const ChatContextProvider = ({
     setMessages(response.chat.messages || []);
   }
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (selectedChat) {
+        fetchChat(selectedChat.id);
+      }
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [selectedChat]);
+
   async function fetchAllChats() {
     const response = await api.chat.getChatList();
     if (response.error) {
