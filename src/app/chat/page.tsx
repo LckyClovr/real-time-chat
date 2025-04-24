@@ -1,39 +1,44 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
-import Image from "next/image";
 import React, { useState, useEffect, useRef } from "react";
 import { useChatContext } from "../_components/ChatContext";
 import { useRouter } from "next/navigation";
 import GetTimeAgo from "@/ts/utils/GetTimeAgo";
 import { cn } from "@/ts/utils/cn";
+import { fetchAPI } from "@/ts/api/util";
 
-const mainBackgroundColor = "#262626";
-const friendsBackgroundColor = "#202020";
-const chatroomSelectionBackgroundColor = "#191919";
-const textBoxColor = "#323232";
-//there are some weird numbers in the positioning and sizing that are taken by positioning manually using
-//pixels then converting to a dynamic percentage of the viewport size so they scale with the window
-//console.log(window.innerHeight)// 1440 by 778 for some reason?
+// Define colors as constants for easy modification
+const COLORS = {
+  main: "#262626",
+  sidebar: "#202020",
+  chatSelection: "#191919",
+  textBox: "#323232",
+};
 
-export default function Page() {
+export default function ChatPage() {
   const router = useRouter();
   const { selectedChat, messages, allChats, sendMessage } = useChatContext();
 
   const [text, setText] = useState("");
+  const [attatchments, setAttatchments] = useState<string[]>([]);
 
   // refs for controlling scroll behavior
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const hasScrolledInitially = useRef(false); // only scroll to bottom on first load
-  const userScrolledUp = useRef(false); // track if user scrolled up manually
+  const scrollContainerRef = useRef<HTMLDivElement | null>(null);
+  const hasScrolledInitially = useRef(false);
+  const userScrolledUp = useRef(false);
 
-  const keyDown = (event: React.KeyboardEvent) => {
-    if (event.key === "Enter") {
-      sendMessage(text); // Call the sendMessage function with the current text
-      setText(""); // remove the text in the chat box after hitting enter so we can type our next message
+  // Handle sending messages when Enter is pressed
+  const handleKeyDown = (event: React.KeyboardEvent) => {
+    if (event.key === "Enter" && text.trim()) {
+      sendMessage(text, attatchments);
+      setText("");
+      setAttatchments([]);
     }
   };
 
+  // Update text state as user types
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setText(event.target.value); // Update the state as the user types
+    setText(event.target.value);
   };
 
   // Automatically scroll to the bottom once on initial load
@@ -59,144 +64,243 @@ export default function Page() {
     if (container) {
       const distanceFromBottom =
         container.scrollHeight - container.scrollTop - container.clientHeight;
-
-      // if the user scrolls more than 50px away from bottom, we stop auto-scrolling
       userScrolledUp.current = distanceFromBottom > 50;
     }
   };
 
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  const isImageUrl = (url: string) => {
+    // Check if the URL ends with common image extensions
+    const imageExtensions = [
+      ".jpg",
+      ".jpeg",
+      ".png",
+      ".gif",
+      ".bmp",
+      ".webp",
+      ".svg",
+    ];
+    return imageExtensions.some((ext) => url.toLowerCase().endsWith(ext));
+  };
+
+  const sortAttachments = (attachments: string[]) => {
+    return [...attachments].sort((a, b) => {
+      const aIsImage = isImageUrl(a);
+      const bIsImage = isImageUrl(b);
+
+      if (aIsImage && !bIsImage) return -1;
+      if (!aIsImage && bIsImage) return 1;
+      return 0;
+    });
+  };
+
+  // Loading state
   if (allChats.length === 0) {
     return (
-      <div className="flex flex-row text-3xl items-center justify-center w-screen h-screen">
+      <div className="flex flex-row text-3xl items-center justify-center w-screen h-screen bg-gray-900 text-white">
         <p className="text-center">
           Loading, please wait
-          <span className="animate-[blink_1.5s_steps(5,start)_infinite]">
-            ...
-          </span>
+          <span className="animate-pulse">...</span>
         </p>
-        <style jsx>{`
-          @keyframes blink {
-            0% {
-              opacity: 1;
-            }
-            50% {
-              opacity: 0;
-            }
-            100% {
-              opacity: 1;
-            }
-          }
-        `}</style>
       </div>
-    ); // or some loading spinner
+    );
   }
 
   return (
-    <div>
+    <div className="flex h-screen w-screen overflow-hidden">
+      {/* Chat room selection sidebar */}
       <div
-        style={{
-          // rectangle for background of chatroom selection
-          width: "6.94vw", // Width of the rectangle
-          height: "100vh", // Height of the rectangle
-          backgroundColor: chatroomSelectionBackgroundColor, // Background color of the rectangle
-        }}
-        className="py-5"
+        className="h-full py-5 flex flex-col items-center"
+        style={{ width: "7vw", backgroundColor: COLORS.chatSelection }}
       >
-        {allChats.map((chat) => {
-          return (
-            <div
-              className={cn(
-                `hover:cursor-pointer hover:bg-gray-600 w-full rounded-full text-center`,
-                {
-                  "bg-gray-700": selectedChat?.id !== chat.id,
-                  "bg-gray-600": selectedChat?.id === chat.id,
-                }
-              )}
-              key={chat.id}
-              onClick={() => {
-                // make a function that takes the chat id as input and sets the selected chat to that chat
-                router.push(`?id=${chat.id}`); // this is the function that changes the url to the chat id
-              }}
-            >
-              {chat.name}
-            </div>
-          );
-        })}
+        {allChats.map((chat) => (
+          <div
+            className={cn(
+              "hover:cursor-pointer hover:bg-gray-600 w-4/5 p-2 mb-2 rounded-full text-center text-white text-sm",
+              {
+                "bg-gray-700": selectedChat?.id !== chat.id,
+                "bg-gray-600": selectedChat?.id === chat.id,
+              }
+            )}
+            key={chat.id}
+            onClick={() => router.push(`?id=${chat.id}`)}
+          >
+            {chat.name}
+          </div>
+        ))}
       </div>
+
+      {/* Main chat area */}
       <div
-        style={{
-          // rectangle for background of friends list
-          width: "20.83vw", // Width of the rectangle
-          height: "100vh", // Height of the rectangle
-          backgroundColor: friendsBackgroundColor, // Background color of the rectangle
-          position: "absolute",
-          top: "0px",
-          left: "6.94vw",
-        }}
-      />
-      <div
-        style={{
-          // rectangle for background of info on the users
-          width: "20.83vw", // Width of the rectangle
-          height: "100vh", // Height of the rectangle
-          backgroundColor: friendsBackgroundColor, // Background color of the rectangle
-          position: "absolute",
-          top: "0px",
-          left: "83.3vw",
-        }}
-      />
-      <div
-        style={{
-          // rectangle for background of chat
-          width: "55.6vw", // Width of the rectangle
-          height: "100vh", // Height of the rectangle
-          backgroundColor: mainBackgroundColor, // Background color of the rectangle
-          position: "absolute",
-          top: "0px",
-          left: "27.78vw",
-        }}
+        className="h-full flex flex-col"
+        style={{ width: "93vw", backgroundColor: COLORS.main }}
       >
+        {/* Messages container with scroll */}
         <div
-          className="flex flex-col overflow-y-scroll h-[85%] w-full"
+          className="flex flex-col overflow-y-auto p-4 flex-grow"
           ref={scrollContainerRef}
           onScroll={handleScroll}
         >
-          {messages.map((message) => {
-            return (
-              <div key={message.id} className="bg-gray-800 p-2 m-2 rounded-md">
-                <div className="flex items-center mb-1 gap-4">
-                  <div className="text-gray-300 font-semibold">
-                    {message.user.name}:
-                  </div>
-                  <div>{GetTimeAgo(message.createdAt)}</div>
+          {messages.map((message) => (
+            <div
+              key={message.id}
+              className="bg-gray-800 p-3 mb-3 rounded-lg text-white flex flex-col"
+            >
+              <div className="flex items-center mb-2 gap-3">
+                <div className="text-gray-300 font-semibold">
+                  {message.user.name}
                 </div>
-                {message.text}
+                <div className="text-xs text-gray-400">
+                  {GetTimeAgo(message.createdAt)}
+                </div>
               </div>
-            );
-          })}
+              <div className="text-gray-100">{message.text}</div>
+              <div className=" flex flex-wrap gap-2">
+                {message.attachments.length > 0 && (
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    {sortAttachments(message.attachments).map((attachment) =>
+                      isImageUrl(attachment) ? (
+                        <div
+                          key={attachment}
+                          className="relative overflow-hidden"
+                        >
+                          <img
+                            src={attachment}
+                            alt={getAttachmentNameFromUrl(attachment) || ""}
+                            className="max-w-xs max-h-64 rounded-md min-w-32"
+                            loading="lazy"
+                          />
+                          <a
+                            href={attachment}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="absolute bottom-2 right-2 bg-gray-900 bg-opacity-70 text-blue-400 hover:text-blue-300 px-2 py-1 rounded text-xs"
+                          >
+                            View Full
+                          </a>
+                        </div>
+                      ) : (
+                        <a
+                          key={attachment}
+                          href={attachment}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-400 h-fit w-fit hover:underline px-3 py-2 bg-gray-700 rounded-md flex items-center"
+                        >
+                          <span className="mr-2">📎</span>
+                          {getAttachmentNameFromUrl(attachment)}
+                        </a>
+                      )
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
         </div>
+
+        {/* Message input */}
+        <div className="p-4 flex items-center gap-2">
+          <input
+            type="text"
+            value={text}
+            onChange={handleChange}
+            onKeyDown={handleKeyDown}
+            placeholder="Type your message and press enter..."
+            className="min-w-0 flex-1 p-3 h-[48px] rounded-lg text-white"
+            style={{ backgroundColor: COLORS.textBox, outline: "none" }}
+          />
+          <button
+            onClick={() => {
+              if (fileInputRef.current) {
+                fileInputRef.current.click();
+              }
+            }}
+            className="w-[48px] h-[48px] bg-white/20 text-xl rounded-full grid place-items-center"
+          >
+            <i className="bi bi-plus-lg"></i>
+          </button>
+          <input
+            ref={fileInputRef}
+            type="file"
+            multiple={true}
+            className="hidden"
+            onChange={async (event: React.ChangeEvent<HTMLInputElement>) => {
+              if (!event.target.files || event.target.files.length === 0) {
+                return;
+              }
+
+              await Promise.all(
+                Array.from(event.target.files || []).map(async (file) => {
+                  if (file.size > 50 * 1024 * 1024) {
+                    alert("File size exceeds 50MB limit");
+                    return;
+                  }
+
+                  const response = (await fetchAPI({
+                    uri: "/file/get-presigned-upload-url",
+                    method: "POST",
+                    body: {
+                      fileName: file.name,
+                    },
+                  })) as {
+                    url: string;
+                    key: string;
+                  };
+
+                  if (!response.url || !response.key) {
+                    alert("Failed to upload file");
+                    return;
+                  }
+
+                  const uploadResponse = await fetch(response.url, {
+                    method: "PUT",
+                    body: file,
+                    headers: {
+                      "Content-Type": file.type,
+                    },
+                  });
+                  if (!uploadResponse.ok) {
+                    alert("Failed to upload file");
+                    return;
+                  }
+
+                  const uploadedFileUrl =
+                    "https://pub-1ad4139dc9ed4e75ba1b107a2ea2dcc0.r2.dev/" +
+                    response.key;
+
+                  setAttatchments((prev) => [...prev, uploadedFileUrl]);
+                })
+              );
+
+              fileInputRef.current!.value = "";
+            }}
+          />
+        </div>
+        {attatchments.length ? (
+          <div className="p-4 pt-0 flex items-center gap-2">
+            <p>
+              {`Attatchments: ${attatchments
+                .map(getAttachmentNameFromUrl)
+                .join(", ")}`}
+            </p>
+            {/* {attatchments.map((attachment) => (
+              <p key={attachment}>
+                {}
+              </p>
+            ))} */}
+          </div>
+        ) : null}
       </div>
-      <input
-        type="text"
-        id="chatTextBox"
-        value={text}
-        onChange={handleChange}
-        placeholder="Type your message and press enter..."
-        onKeyDown={keyDown}
-        style={{
-          width: "41.6vw",
-          padding: "1.28vh",
-          paddingLeft: "4.16vw",
-          color: "#efefef",
-          position: "absolute",
-          top: "89.97vh",
-          left: "34.72vw",
-          borderRadius: "1.28vh",
-          backgroundColor: textBoxColor,
-          outline: "none",
-          fontSize: "1.11vw",
-        }}
-      />
     </div>
   );
+}
+
+export function getAttachmentNameFromUrl(url: string) {
+  return url
+    .split("https://pub-1ad4139dc9ed4e75ba1b107a2ea2dcc0.r2.dev/")[1]
+    .split("-")
+    .slice(1)
+    .join("-");
 }
