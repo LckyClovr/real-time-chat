@@ -1,18 +1,13 @@
 "use client";
 
-import React, {
-  createContext,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 import api from "@/ts/api";
 
 import { usePathname, useRouter } from "next/navigation";
 import { useSearchParams } from "next/navigation";
 
 import { Chat, Message } from "@/ts/api/api.types";
+import WebSocketClient from "./WebSocketClient";
 
 const ChatContext = createContext<{
   selectedChat: Chat | undefined;
@@ -119,6 +114,7 @@ export const ChatContextProvider = ({
         sendMessage,
       }}
     >
+      <WebSocketClient />
       {children}
     </ChatContext.Provider>
   );
