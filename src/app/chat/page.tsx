@@ -55,7 +55,7 @@ export default function ChatPage() {
     }
   }, []);
 
-  // Auto-scroll when new messages arrive unless the user has scrolled up
+  // Auto-scroll when new messages arrive unless the user has scrolled up a
   useEffect(() => {
     const container = scrollContainerRef.current;
     if (container && !userScrolledUp.current) {
