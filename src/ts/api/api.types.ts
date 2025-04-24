@@ -38,6 +38,7 @@ export type Message = {
   user: User;
   chatId: string;
   chat: Chat;
+  attachments: string[];
 
   createdAt: string;
   updatedAt: string;
