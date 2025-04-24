@@ -309,6 +309,30 @@ function getMessageText(text: string) {
   if (text.startsWith("/gold")) {
     return text.slice(6);
   }
+  if (text.startsWith("/rainbow")) {
+    return (
+      <>
+        {text
+          .slice(9)
+          .split("")
+          .map((char, index) => (
+            <span
+              key={index}
+              style={{
+                color: "red",
+                fontWeight: "bold",
+                animation: `rotate-hue 5s infinite`,
+                animationDelay: `-${index * 0.1}s`,
+                textShadow: `0 0 10px darkred`,
+              }}
+            >
+              {char}
+            </span>
+          ))}
+      </>
+    );
+  }
+
   return text;
 }
 
@@ -318,7 +342,10 @@ function getMessageStyle(text: string) {
       color: "gold",
       fontWeight: "bold",
       textShadow: "0 0 5px gold, 0 0 10px gold, 0 0 15px gold",
+      animation: "pulse-gold 2s infinite",
     };
+  } else if (text.startsWith("/rainbow")) {
+    return {};
   }
   return {};
 }
