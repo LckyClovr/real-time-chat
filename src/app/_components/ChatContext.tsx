@@ -13,7 +13,7 @@ const ChatContext = createContext<{
   selectedChat: Chat | undefined;
   messages: Message[];
   allChats: Chat[];
-  sendMessage: (message: string) => Promise<void>;
+  sendMessage: (message: string, attachments: string[]) => Promise<void>;
 }>({
   selectedChat: undefined,
   messages: [],
@@ -88,12 +88,16 @@ export const ChatContextProvider = ({
     fetchChat(chatId || selectedChat?.id || "");
   }, [pathname, searchParams, selectedChat]);
 
-  async function sendMessage(message: string) {
+  async function sendMessage(message: string, attachments?: string[]) {
     if (!selectedChat) {
       console.error("No chat selected");
       return;
     }
-    const response = await api.chat.sendMessage(selectedChat.id, message);
+    const response = await api.chat.sendMessage(
+      selectedChat.id,
+      message,
+      attachments || []
+    );
     if (response.error) {
       console.error("Error sending message:", response.error);
       return;
