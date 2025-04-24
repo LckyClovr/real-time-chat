@@ -141,8 +141,15 @@ export default function ChatPage() {
               className="bg-gray-800 p-3 mb-3 rounded-lg text-white flex flex-col"
             >
               <div className="flex items-center mb-2 gap-3">
-                <div className="text-gray-300 font-semibold">
-                  {message.authorName}
+                <div className="flex items-center gap-1">
+                  <div className="text-gray-300 font-semibold">
+                    {message.authorName}
+                  </div>
+                  {message.authorBot ? (
+                    <div className="text-gray-300 font-semibold text-xs tracking-wide bg-blue-600/[50%] rounded-sm px-1 p-[1px]">
+                      BOT
+                    </div>
+                  ) : null}
                 </div>
                 <div className="text-xs text-gray-400">
                   {GetTimeAgo(message.createdAt)}

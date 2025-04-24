@@ -33,8 +33,12 @@ export type Chat = {
 
 export type Message = {
   id: string;
+
   text: string;
   attachments: string[];
-  createdAt: number;
+
   authorName: string;
+  authorBot: boolean;
+
+  createdAt: number;
 };
