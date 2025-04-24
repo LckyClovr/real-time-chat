@@ -1,10 +1,10 @@
-/* eslint-disable @next/next/no-img-element */
 "use client";
+
+/* eslint-disable @next/next/no-img-element */
+
 import React, { useState, useEffect, useRef } from "react";
 import { useChatContext } from "../_components/ChatContext";
-import { useRouter } from "next/navigation";
 import GetTimeAgo from "@/ts/utils/GetTimeAgo";
-import { cn } from "@/ts/utils/cn";
 import { fetchAPI } from "@/ts/api/util";
 
 // Define colors as constants for easy modification
@@ -16,11 +16,10 @@ const COLORS = {
 };
 
 export default function ChatPage() {
-  const router = useRouter();
-  const { selectedChat, messages, allChats, sendMessage } = useChatContext();
+  const { messages, sendMessage } = useChatContext();
 
   const [text, setText] = useState("");
-  const [attatchments, setAttatchments] = useState<string[]>([]);
+  const [attachments, setattachments] = useState<string[]>([]);
 
   // refs for controlling scroll behavior
   const scrollContainerRef = useRef<HTMLDivElement | null>(null);
@@ -30,9 +29,15 @@ export default function ChatPage() {
   // Handle sending messages when Enter is pressed
   const handleKeyDown = (event: React.KeyboardEvent) => {
     if (event.key === "Enter" && text.trim()) {
-      sendMessage(text, attatchments);
+      if (text.startsWith("/name")) {
+        const newName = text.slice(6).trim();
+        window.localStorage.setItem("username", newName);
+      } else {
+        sendMessage(text, attachments);
+      }
+
       setText("");
-      setAttatchments([]);
+      setattachments([]);
     }
   };
 
@@ -95,18 +100,6 @@ export default function ChatPage() {
     });
   };
 
-  // Loading state
-  if (allChats.length === 0) {
-    return (
-      <div className="flex flex-row text-3xl items-center justify-center w-screen h-screen bg-gray-900 text-white">
-        <p className="text-center">
-          Loading, please wait
-          <span className="animate-pulse">...</span>
-        </p>
-      </div>
-    );
-  }
-
   return (
     <div className="flex h-screen w-screen overflow-hidden">
       {/* Chat room selection sidebar */}
@@ -114,7 +107,7 @@ export default function ChatPage() {
         className="h-full py-5 flex flex-col items-center"
         style={{ width: "7vw", backgroundColor: COLORS.chatSelection }}
       >
-        {allChats.map((chat) => (
+        {/* {allChats.map((chat) => (
           <div
             className={cn(
               "hover:cursor-pointer hover:bg-gray-600 w-4/5 p-2 mb-2 rounded-full text-center text-white text-sm",
@@ -128,7 +121,7 @@ export default function ChatPage() {
           >
             {chat.name}
           </div>
-        ))}
+        ))} */}
       </div>
 
       {/* Main chat area */}
@@ -149,13 +142,18 @@ export default function ChatPage() {
             >
               <div className="flex items-center mb-2 gap-3">
                 <div className="text-gray-300 font-semibold">
-                  {message.user.name}
+                  {message.authorName}
                 </div>
                 <div className="text-xs text-gray-400">
                   {GetTimeAgo(message.createdAt)}
                 </div>
               </div>
-              <div className="text-gray-100">{message.text}</div>
+              <div
+                style={getMessageStyle(message.text) as React.CSSProperties}
+                className="text-gray-100"
+              >
+                {getMessageText(message.text)}
+              </div>
               <div className=" flex flex-wrap gap-2">
                 {message.attachments.length > 0 && (
                   <div className="mt-2 flex flex-wrap gap-2">
@@ -270,7 +268,7 @@ export default function ChatPage() {
                     "https://pub-1ad4139dc9ed4e75ba1b107a2ea2dcc0.r2.dev/" +
                     response.key;
 
-                  setAttatchments((prev) => [...prev, uploadedFileUrl]);
+                  setattachments((prev) => [...prev, uploadedFileUrl]);
                 })
               );
 
@@ -278,18 +276,13 @@ export default function ChatPage() {
             }}
           />
         </div>
-        {attatchments.length ? (
+        {attachments.length ? (
           <div className="p-4 pt-0 flex items-center gap-2">
             <p>
-              {`Attatchments: ${attatchments
+              {`attachments: ${attachments
                 .map(getAttachmentNameFromUrl)
                 .join(", ")}`}
             </p>
-            {/* {attatchments.map((attachment) => (
-              <p key={attachment}>
-                {}
-              </p>
-            ))} */}
           </div>
         ) : null}
       </div>
@@ -303,4 +296,22 @@ export function getAttachmentNameFromUrl(url: string) {
     .split("-")
     .slice(1)
     .join("-");
+}
+
+function getMessageText(text: string) {
+  if (text.startsWith("/gold")) {
+    return text.slice(6);
+  }
+  return text;
+}
+
+function getMessageStyle(text: string) {
+  if (text.startsWith("/gold")) {
+    return {
+      color: "gold",
+      fontWeight: "bold",
+      textShadow: "0 0 5px gold, 0 0 10px gold, 0 0 15px gold",
+    };
+  }
+  return {};
 }

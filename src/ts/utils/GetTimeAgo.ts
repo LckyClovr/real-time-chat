@@ -4,6 +4,6 @@ TimeAgo.addDefaultLocale(en);
 
 const timeAgo = new TimeAgo("en-US");
 
-export default function GetTimeAgo(date: string) {
+export default function GetTimeAgo(date: number | string) {
   return timeAgo.format(new Date(date));
 }

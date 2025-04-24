@@ -34,12 +34,7 @@ export type Chat = {
 export type Message = {
   id: string;
   text: string;
-  userId: string;
-  user: User;
-  chatId: string;
-  chat: Chat;
   attachments: string[];
-
-  createdAt: string;
-  updatedAt: string;
+  createdAt: number;
+  authorName: string;
 };

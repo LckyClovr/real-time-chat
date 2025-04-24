@@ -1,23 +1,16 @@
 "use client";
 
 import React, { createContext, useContext, useEffect, useState } from "react";
-import api from "@/ts/api";
-
-import { usePathname, useRouter } from "next/navigation";
 import { useSearchParams } from "next/navigation";
-
-import { Chat, Message } from "@/ts/api/api.types";
-import WebSocketClient from "./WebSocketClient";
+import { Message } from "@/ts/api/api.types";
+import useWebSocket from "react-use-websocket";
+import { createId } from "@paralleldrive/cuid2";
 
 const ChatContext = createContext<{
-  selectedChat: Chat | undefined;
   messages: Message[];
-  allChats: Chat[];
   sendMessage: (message: string, attachments: string[]) => Promise<void>;
 }>({
-  selectedChat: undefined,
   messages: [],
-  allChats: [],
   sendMessage: async () => {},
 });
 
@@ -27,98 +20,75 @@ export const ChatContextProvider = ({
   children: React.ReactNode;
 }) => {
   const searchParams = useSearchParams();
-  const router = useRouter();
-  const pathname = usePathname();
 
-  const [selectedChat, setSelectedChat] = useState<Chat>();
   const [messages, setMessages] = useState<Message[]>([]);
-  const [allChats, setAllChats] = useState<Chat[]>([]);
 
+  const { lastMessage, sendMessage: sendWsMessage } = useWebSocket(
+    process.env.NEXT_PUBLIC_WS_SERVER + "",
+    {
+      share: true,
+      shouldReconnect: () => true,
+    }
+  );
+
+  // Send a join room message when the component mounts or search params change
   useEffect(() => {
-    fetchAllChats();
-  }, []);
+    if (!searchParams.get("id")) return;
+    sendWsMessage(
+      JSON.stringify({
+        type: "room:join",
+        data: {
+          roomId: searchParams.get("id"),
+        },
+      })
+    );
+  }, [searchParams, sendWsMessage]);
 
-  async function fetchChat(chatId: string) {
-    const response = await api.chat.getChat(chatId);
-    if (response.error) {
-      console.error("Error fetching chat:", response.error);
-      return;
-    }
-    if (!response.chat) {
-      console.error("Chat not found");
-      return;
-    }
-    router.push(`?id=${response.chat.id}`);
-    if (response.chat.id === selectedChat?.id) {
-      setMessages(response.chat.messages || []);
-      return;
-    }
-    setSelectedChat(response.chat);
-    setMessages(response.chat.messages || []);
-  }
-
+  // Parse websocket events
   useEffect(() => {
-    const interval = setInterval(() => {
-      if (selectedChat) {
-        fetchChat(selectedChat.id);
-      }
-    }, 5000);
+    const data = parseData(lastMessage?.data + "");
+    if (!data) return;
 
-    return () => clearInterval(interval);
-  }, [selectedChat]);
-
-  async function fetchAllChats() {
-    const response = await api.chat.getChatList();
-    if (response.error) {
-      console.error("Error fetching chat list:", response.error);
-      return;
-    }
-    setAllChats(response.chats || []);
-    setSelectedChat(response.chats[0]);
-  }
-
-  useEffect(() => {
-    const chatId = searchParams.get("id") || undefined;
-    if (!chatId && !selectedChat) {
-      setSelectedChat(undefined);
-      setMessages([]);
-      return;
+    if (data.type === "room:joined") {
+      setMessages(data.data.messages);
     }
 
-    fetchChat(chatId || selectedChat?.id || "");
-  }, [pathname, searchParams, selectedChat]);
+    if (data.type === "message:received") {
+      setMessages((prev) => [...prev, data.data.message]);
+    }
+  }, [lastMessage]);
 
   async function sendMessage(message: string, attachments?: string[]) {
-    if (!selectedChat) {
-      console.error("No chat selected");
-      return;
-    }
-    const response = await api.chat.sendMessage(
-      selectedChat.id,
-      message,
-      attachments || []
+    // Create the new message object
+    const newMessage = {
+      id: createId(),
+      text: message,
+      attachments: attachments || [],
+      createdAt: Date.now(),
+      authorName: window.localStorage.getItem("username") || "Unnamed User",
+    };
+
+    // Add it to the local state first
+    setMessages((prev) => [...prev, newMessage]);
+
+    // Send the message to the server using the message:send event type
+    sendWsMessage(
+      JSON.stringify({
+        type: "message:send",
+        data: {
+          message: newMessage,
+        },
+      })
     );
-    if (response.error) {
-      console.error("Error sending message:", response.error);
-      return;
-    }
-    if (!response.message) {
-      console.error("Message not found in response");
-      return;
-    }
-    fetchChat(selectedChat.id);
   }
 
   return (
     <ChatContext.Provider
       value={{
-        selectedChat,
         messages,
-        allChats,
         sendMessage,
       }}
     >
-      <WebSocketClient />
       {children}
     </ChatContext.Provider>
   );
@@ -133,3 +103,12 @@ export const useChatContext = () => {
 
   return context;
 };
+
+function parseData(dataStr: string) {
+  let data = null;
+  try {
+    data = JSON.parse(dataStr);
+  } catch {}
+
+  return data;
+}
