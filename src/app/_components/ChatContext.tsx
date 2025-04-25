@@ -5,7 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { Message } from "@/ts/api/api.types";
 import useWebSocket from "react-use-websocket";
 import { createId } from "@paralleldrive/cuid2";
-import router from "next/router";
+import { useRouter } from "next/router";
 
 const ChatContext = createContext<{
   messages: Message[];
@@ -21,7 +21,7 @@ export const ChatContextProvider = ({
   children: React.ReactNode;
 }) => {
   const searchParams = useSearchParams();
-
+  const router = useRouter();
   const [messages, setMessages] = useState<Message[]>([]);
 
   const { lastMessage, sendMessage: sendWsMessage } = useWebSocket(
