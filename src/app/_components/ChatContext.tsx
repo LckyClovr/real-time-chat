@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { Message } from "@/ts/api/api.types";
 import useWebSocket from "react-use-websocket";
 import { createId } from "@paralleldrive/cuid2";
+import router from "next/router";
 
 const ChatContext = createContext<{
   messages: Message[];
@@ -33,7 +34,10 @@ export const ChatContextProvider = ({
 
   // Send a join room message when the component mounts or search params change
   useEffect(() => {
-    if (!searchParams.get("id")) return;
+    if (!searchParams.get("id")) {
+      router.push("/chat?id=test");
+      return;
+    }
     sendWsMessage(
       JSON.stringify({
         type: "room:join",
@@ -66,6 +70,7 @@ export const ChatContextProvider = ({
       attachments: attachments || [],
       createdAt: Date.now(),
       authorName: window.localStorage.getItem("username") || "Unnamed User",
+      authorBot: false, // Default value for authorBot
     };
 
     // Add it to the local state first
