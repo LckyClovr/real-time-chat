@@ -5,7 +5,6 @@ import { useSearchParams } from "next/navigation";
 import { Message } from "@/ts/api/api.types";
 import useWebSocket from "react-use-websocket";
 import { createId } from "@paralleldrive/cuid2";
-import { useRouter } from "next/router";
 
 const ChatContext = createContext<{
   messages: Message[];
@@ -21,7 +20,7 @@ export const ChatContextProvider = ({
   children: React.ReactNode;
 }) => {
   const searchParams = useSearchParams();
-  const router = useRouter();
+
   const [messages, setMessages] = useState<Message[]>([]);
 
   const { lastMessage, sendMessage: sendWsMessage } = useWebSocket(
@@ -35,7 +34,6 @@ export const ChatContextProvider = ({
   // Send a join room message when the component mounts or search params change
   useEffect(() => {
     if (!searchParams.get("id")) {
-      router.push("/chat?id=test");
       return;
     }
     sendWsMessage(
