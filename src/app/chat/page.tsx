@@ -99,7 +99,7 @@ export default function ChatPage() {
       return 0;
     });
   };
-  
+
   return (
     <div className="flex h-screen w-screen overflow-hidden">
       {/* Chat room selection sidebar */}
@@ -123,16 +123,15 @@ export default function ChatPage() {
           </div>
         ))} */}
       </div>
-          
+
       {/* Main chat area */}
-      
+
       <div
         className="h-full flex flex-col"
-        style={{ width: "75vw", backgroundColor: COLORS.main}}
+        style={{ width: "75vw", backgroundColor: COLORS.main }}
       >
-        
         {/* Messages container with scroll */}
-        
+
         <div
           className="flex flex-col overflow-y-auto p-4 flex-grow"
           ref={scrollContainerRef}
@@ -148,7 +147,7 @@ export default function ChatPage() {
                   <div className="text-gray-300 font-semibold">
                     {message.authorName}
                   </div>
-                  
+
                   {message.authorBot ? (
                     <div className="text-gray-300 font-semibold text-xs tracking-wide bg-blue-600/[50%] rounded-sm px-1 p-[1px]">
                       BOT
@@ -208,7 +207,7 @@ export default function ChatPage() {
             </div>
           ))}
         </div>
-        
+
         {/* Message input */}
         <div className="p-4 flex items-center gap-2">
           <input
@@ -298,51 +297,56 @@ export default function ChatPage() {
         ) : null}
       </div>
       <div
-          className="h-full flex server-info"
-          style={{ width: "20vw", backgroundColor: COLORS.chatSelection}}
+        className="h-full flex server-info"
+        style={{ width: "20vw", backgroundColor: COLORS.chatSelection }}
+      >
+        <link
+          href="https://fonts.googleapis.com/css2?family=Delius:wght@400;700&display=swap"
+          rel="stylesheet"
+        />
+        <div
+          style={{
+            width: "400px",
+            height: "200px",
+            backgroundColor: COLORS.chatSelection,
+            padding: "20px",
+            position: "relative",
+          }}
         >
-          <link href="https://fonts.googleapis.com/css2?family=Delius:wght@400;700&display=swap" rel="stylesheet" />
-          <div
-      style={{
-        width: '400px',
-        height: '200px',
-        backgroundColor: COLORS.chatSelection,
-        padding: '20px',
-        position: 'relative'
-      }}
-    >
-            <input
-        type="text"
-        value="Comet Chat"
-        disabled
-        style={{
-          width: '100%',
-          padding: '10px',
-          fontSize: '24px',
-          fontFamily: 'Delius',
-          boxSizing: 'border-box',
-          backgroundColor: COLORS.chatSelection,
-          color: '#f0bd16',
-          cursor: 'default'
-        }}
-      />
-      <textarea
-        disabled
-        style={{
-          width: '100%',
-          height: '100%',
-          padding: '10px',
-          fontSize: '24px',
-          fontFamily: 'Delius',
-          boxSizing: 'border-box',
-          backgroundColor: COLORS.chatSelection,
-          color: '#f0bd16',
-          cursor: 'default'
-        }}
-        placeholder="A simple chat room for our software engineering project!"
-      />
-    </div>
+          <p
+            style={{
+              width: "100%",
+              padding: "10px",
+              fontSize: "24px",
+              fontFamily: "Delius",
+              boxSizing: "border-box",
+              backgroundColor: COLORS.chatSelection,
+              color: "#f0bd16",
+              cursor: "default",
+            }}
+          >
+            Comet Chat
+          </p>
+          <p
+            style={{
+              width: "100%",
+              height: "100%",
+              padding: "10px",
+              fontSize: "24px",
+              fontFamily: "Delius",
+              boxSizing: "border-box",
+              backgroundColor: COLORS.chatSelection,
+              color: "#f0bd16",
+              cursor: "default",
+            }}
+          >
+            Welcome to Comet Chat! This is a demo chat application built with
+            React and Next.js. You can send messages, upload files, and even use
+            some fun commands like /gold, /rainbow or even customize your
+            nickname with /name. Enjoy chatting!
+          </p>
         </div>
+      </div>
     </div>
   );
 }
