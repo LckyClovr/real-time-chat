@@ -310,11 +310,11 @@ export default function ChatPage() {
             padding: "20px",
             position: "relative",
           }}
+          className="flex flex-col gap-2"
         >
           <p
             style={{
               width: "100%",
-              padding: "10px",
               fontSize: "24px",
               fontFamily: "Delius",
               boxSizing: "border-box",
@@ -328,8 +328,6 @@ export default function ChatPage() {
           <p
             style={{
               width: "100%",
-              height: "100%",
-              padding: "10px",
               fontSize: "24px",
               boxSizing: "border-box",
               backgroundColor: COLORS.chatSelection,
@@ -344,8 +342,6 @@ export default function ChatPage() {
           <p
             style={{
               width: "100%",
-              height: "100%",
-              padding: "10px",
               fontSize: "32px",
               boxSizing: "border-box",
               backgroundColor: COLORS.chatSelection,
