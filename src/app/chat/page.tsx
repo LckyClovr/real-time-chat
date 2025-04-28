@@ -329,14 +329,9 @@ export default function ChatPage() {
           </p>
           <p
             style={{
-              width: "100%",
-              height: "100%",
               padding: "10px",
-              fontSize: "24px",
-              fontFamily: "Delius",
               boxSizing: "border-box",
               backgroundColor: COLORS.chatSelection,
-              color: "#f0bd16",
               cursor: "default",
             }}
           >
