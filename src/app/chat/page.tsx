@@ -329,7 +329,10 @@ export default function ChatPage() {
           </p>
           <p
             style={{
+              width: "100%",
+              height: "100%",
               padding: "10px",
+              fontSize: "24px",
               boxSizing: "border-box",
               backgroundColor: COLORS.chatSelection,
               cursor: "default",
@@ -339,6 +342,9 @@ export default function ChatPage() {
             React and Next.js. You can send messages, upload files, and even use
             some fun commands like /gold, /rainbow or even customize your
             nickname with /name. Enjoy chatting!
+          </p>
+          <p className="text-2xl">
+            Join the conversation at https://tinyurl.com/bdhsyfu7
           </p>
         </div>
       </div>
