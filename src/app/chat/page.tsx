@@ -325,7 +325,7 @@ export default function ChatPage() {
           >
             Comet Chat
           </p>
-          <p className="text-2xl text-center">
+          <p className="text-2xl">
             Welcome to Comet Chat! This is a demo chat application built with
             React and Next.js. You can send messages, upload files, and even use
             some fun commands like /gold /rainbow and even customize your
