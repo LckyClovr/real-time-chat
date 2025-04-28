@@ -348,7 +348,10 @@ export default function ChatPage() {
               cursor: "default",
             }}
           >
-            Join the conversation at https://tinyurl.com/bdhsyfu7
+            Join the conversation at
+          </p>
+          <p className="text-center text-blue-500 font-bold text-lg underline">
+            https://tinyurl.com/bdhsyfu7
           </p>
         </div>
       </div>
