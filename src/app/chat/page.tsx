@@ -325,22 +325,11 @@ export default function ChatPage() {
           >
             Comet Chat
           </p>
-          <p
-            style={{
-              width: "100%",
-              fontSize: "24px",
-              boxSizing: "border-box",
-              backgroundColor: COLORS.chatSelection,
-              cursor: "default",
-            }}
-          >
+          <p className="text-2xl text-center">
             Welcome to Comet Chat! This is a demo chat application built with
             React and Next.js. You can send messages, upload files, and even use
             some fun commands like /gold /rainbow and even customize your
             nickname with /name. Enjoy chatting!
-          </p>
-          <p className="text-center text-gray-400 font-bold text-2xl">
-            Join the conversation:
           </p>
           <a
             href="https://tinyurl.com/bdhsyfu7"
@@ -348,7 +337,7 @@ export default function ChatPage() {
             rel="noopener noreferrer"
             className="text-center text-blue-500 font-bold text-2xl underline"
           >
-            https://tinyurl.com/bdhsyfu7
+            Join the conversation
           </a>
         </div>
       </div>
