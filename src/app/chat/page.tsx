@@ -339,18 +339,10 @@ export default function ChatPage() {
             some fun commands like /gold /rainbow and even customize your
             nickname with /name. Enjoy chatting!
           </p>
-          <p
-            style={{
-              width: "100%",
-              fontSize: "32px",
-              boxSizing: "border-box",
-              backgroundColor: COLORS.chatSelection,
-              cursor: "default",
-            }}
-          >
-            Join the conversation at
+          <p className="text-center text-gray-400 font-bold text-2xl">
+            Join the conversation:
           </p>
-          <p className="text-center text-blue-500 font-bold text-lg underline">
+          <p className="text-center text-blue-500 font-bold text-2xl underline">
             https://tinyurl.com/bdhsyfu7
           </p>
         </div>
