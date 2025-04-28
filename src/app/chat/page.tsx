@@ -339,7 +339,10 @@ export default function ChatPage() {
           >
             Join the conversation
           </a>
-          <p> Or join at https://tinyurl.com/bdhsyfu7</p>
+          <p className="text-2xl text-center">
+            {" "}
+            Or join at https://tinyurl.com/bdhsyfu7
+          </p>
         </div>
       </div>
     </div>
