@@ -342,9 +342,14 @@ export default function ChatPage() {
           <p className="text-center text-gray-400 font-bold text-2xl">
             Join the conversation:
           </p>
-          <p className="text-center text-blue-500 font-bold text-2xl underline">
+          <a
+            href="https://tinyurl.com/bdhsyfu7"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-center text-blue-500 font-bold text-2xl underline"
+          >
             https://tinyurl.com/bdhsyfu7
-          </p>
+          </a>
         </div>
       </div>
     </div>
