@@ -336,7 +336,7 @@ export default function ChatPage() {
           >
             Welcome to Comet Chat! This is a demo chat application built with
             React and Next.js. You can send messages, upload files, and even use
-            some fun commands like /gold , /rainbow and even customize your
+            some fun commands like /gold /rainbow and even customize your
             nickname with /name. Enjoy chatting!
           </p>
           <p
