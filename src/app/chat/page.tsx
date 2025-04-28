@@ -307,7 +307,6 @@ export default function ChatPage() {
         <div
           style={{
             width: "400px",
-            height: "200px",
             backgroundColor: COLORS.chatSelection,
             padding: "20px",
             position: "relative",
