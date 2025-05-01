@@ -40,3 +40,198 @@ body {
     filter: hue-rotate(360deg);
   }
 }
+
+/* File: app/globals.css - Add these styles to your existing CSS */
+
+/* Animation for the editor highlight effect */
+@keyframes highlight-change {
+  0% {
+    background-color: rgba(72, 118, 214, 0.2);
+  }
+  100% {
+    background-color: transparent;
+  }
+}
+
+/* Animation for the cursor blink */
+@keyframes cursor-blink {
+  0%, 100% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* Animation for the gold text effect */
+@keyframes pulse-gold {
+  0% {
+    text-shadow: 0 0 5px gold, 0 0 10px gold;
+  }
+  50% {
+    text-shadow: 0 0 10px gold, 0 0 20px gold, 0 0 30px gold;
+  }
+  100% {
+    text-shadow: 0 0 5px gold, 0 0 10px gold;
+  }
+}
+
+/* Animation for rainbow text */
+@keyframes rotate-hue {
+  0% {
+    color: #ff0000;
+  }
+  16.6% {
+    color: #ff8000;
+  }
+  33.3% {
+    color: #ffff00;
+  }
+  50% {
+    color: #00ff00;
+  }
+  66.6% {
+    color: #0000ff;
+  }
+  83.3% {
+    color: #8000ff;
+  }
+  100% {
+    color: #ff0000;
+  }
+}
+
+/* Text editor styling */
+.text-editor-highlighted {
+  animation: highlight-change 1.5s ease-out;
+}
+
+.collaborator-cursor {
+  position: absolute;
+  width: 2px;
+  height: 18px;
+  background-color: #ff5722;
+  animation: cursor-blink 1s infinite;
+}
+
+.editor-textarea {
+  font-family: monospace;
+  line-height: 1.5;
+  tab-size: 4;
+  caret-color: white;
+  resize: none;
+  border: none;
+  padding: 12px;
+  border-radius: 4px;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+}
+
+.editor-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 16px;
+  background-color: #333333;
+  border-bottom: 1px solid #444444;
+}
+
+.editor-toolbar-button {
+  background-color: #4a4a4a;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.editor-toolbar-button:hover {
+  background-color: #5a5a5a;
+}
+
+.editor-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 16px;
+  background-color: #333333;
+  border-top: 1px solid #444444;
+  font-size: 12px;
+  color: #aaaaaa;
+}
+
+.editor-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.5);
+  padding: 20px;
+}
+
+.editor-modal {
+  width: 90%;
+  max-width: 1000px;
+  height: 80%;
+  background-color: #1e1e1e;
+  border-radius: 8px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+}
+
+/* Status indicator for collaboration */
+.status-indicator {
+  display: flex;
+  align-items: center;
+  font-size: 12px;
+  color: #aaaaaa;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 6px;
+  background-color: #4caf50;
+}
+
+.status-dot.offline {
+  background-color: #f44336;
+}
+
+/* Tooltip for editor buttons */
+.tooltip {
+  position: relative;
+  display: inline-block;
+}
+
+.tooltip .tooltip-text {
+  visibility: hidden;
+  width: 120px;
+  background-color: #555;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px;
+  position: absolute;
+  z-index: 1;
+  bottom: 125%;
+  left: 50%;
+  margin-left: -60px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.tooltip:hover .tooltip-text {
+  visibility: visible;
+  opacity: 1;
+}
