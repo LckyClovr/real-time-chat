@@ -143,7 +143,9 @@ export default function ChatPage() {
                   {GetTimeAgo(msg.createdAt)}
                 </div>
               </div>
-              <div className="text-gray-100">{msg.text}</div>
+              <div style={getMessageStyle(msg.text)} className="text-gray-100">
+                {getMessageText(msg.text)}
+              </div>
               <div className="flex flex-wrap gap-2 mt-2">
                 {sortAttachments(msg.attachments).map((att) =>
                   isImageUrl(att) ? (
@@ -292,4 +294,49 @@ export default function ChatPage() {
       {activeDocument && <TextEditor />}
     </div>
   );
+}
+
+function getMessageText(text: string) {
+  if (text.startsWith("/gold")) {
+    return text.slice(6);
+  }
+  if (text.startsWith("/rainbow")) {
+    return (
+      <>
+        {text
+          .slice(9)
+          .split("")
+          .map((char, index) => (
+            <span
+              key={index}
+              style={{
+                color: "red",
+                fontWeight: "bold",
+                animation: `rotate-hue 5s infinite`,
+                animationDelay: `-${index * 0.1}s`,
+                textShadow: `0 0 10px darkred`,
+              }}
+            >
+              {char}
+            </span>
+          ))}
+      </>
+    );
+  }
+
+  return text;
+}
+
+function getMessageStyle(text: string) {
+  if (text.startsWith("/gold")) {
+    return {
+      color: "gold",
+      fontWeight: "bold",
+      textShadow: "0 0 5px gold, 0 0 10px gold, 0 0 15px gold",
+      animation: "pulse-gold 2s infinite",
+    };
+  } else if (text.startsWith("/rainbow")) {
+    return {};
+  }
+  return {};
 }
