@@ -1,36 +1,87 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Comet Chat
 
-## Getting Started
+A real-time collaborative chat application with file sharing and live document editing capabilities.
 
-First, run the development server:
+## Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+### Real-Time Messaging
+- Instant message delivery via WebSocket connections
+- Room-based chat architecture supporting multiple concurrent conversations
+- Message persistence with PostgreSQL database
+- User presence tracking
+
+### File Sharing
+- Upload and share files directly in chat
+- Support for images (JPG, PNG, GIF, WEBP, SVG, BMP)
+- Support for text files (TXT, MD, JSON, CSV, HTML, CSS, JS, TS, and more)
+- Cloud storage via Cloudflare R2 (S3-compatible)
+- Up to 50MB file uploads
+
+### Collaborative Document Editing
+- Real-time collaborative text editor
+- Multiple users can edit the same document simultaneously
+- Live editor presence indicators
+- Automatic content synchronization across all connected editors
+- Save documents directly to cloud storage
+
+### Chat Commands
+- `/8ball <question>` - Ask the Magic 8-ball
+- `/gold <message>` - Send a message with gold text styling
+- `/rainbow <message>` - Send a message with rainbow color animation
+- `/name <nickname>` - Set a custom nickname
+
+### User Management
+- User registration and authentication
+- Custom usernames and display names
+- Profile image support
+- JWT-based session management
+
+## Tech Stack
+
+### Frontend
+- **Next.js 15** - React framework with server-side rendering
+- **React 19** - UI library
+- **TypeScript** - Static typing
+- **Tailwind CSS** - Utility-first styling
+- **react-use-websocket** - WebSocket client
+
+### Backend
+- **Express.js** - Web framework
+- **WebSocket (ws)** - Real-time bidirectional communication
+- **Prisma** - ORM for database operations
+- **PostgreSQL** - Primary database
+- **Cloudflare R2** - Cloud file storage
+
+### Security
+- JWT authentication
+- Argon2 password hashing
+- Helmet security headers
+- Zod schema validation
+- Content filtering
+
+## Project Structure
+
+```
+RTCApp/
+├── real-time-chat/          # Next.js frontend
+│   └── src/
+│       ├── app/
+│       │   ├── chat/        # Chat UI and components
+│       │   └── _components/ # Shared components
+│       ├── hooks/           # Custom React hooks
+│       └── ts/
+│           ├── api/         # API client and types
+│           └── utils/       # Utility functions
+│
+└── real-time-chat-api/      # Express backend
+    └── src/
+        ├── routes/          # REST API endpoints
+        ├── websocket/       # WebSocket server
+        ├── middlewares/     # Express middlewares
+        └── resources/       # Database and S3 clients
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## License
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+MIT
