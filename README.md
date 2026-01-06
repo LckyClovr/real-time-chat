@@ -1,5 +1,5 @@
 # Comet Chat
-
+[Demo](https://real-time-chat-gules-eight.vercel.app/chat?id=present)
 A real-time collaborative chat application with file sharing and live document editing capabilities.
 
 ## Features
